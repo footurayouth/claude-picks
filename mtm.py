@@ -259,7 +259,9 @@ def main():
         r = h.loc[d]
         return len(prev) > 0 and not (float(r.get("Stock Splits", 0) or 0) > 0) and looks_like_split(float(prev.iloc[-1]), float(r["Open"]))
     for i, d in enumerate(days):
-        sus = [t for t in need if d in recent and split_suspect(t, d)]
+        sus = [t for t in need if split_suspect(t, d)]
+        if sus and d not in recent:   # Yahoo never recorded it: fail loudly instead of booking a false loss
+            sys.exit(f"{d.date()}: {sus} gapped like a split for 3+ sessions with no split event: verify and fix by hand")
         if sus:
             msg = f"{d.date()}: {sus} gapped like an unrecorded split: holding this day back, will retry next run"
             print(msg); open(ROOT / "ledger_log.txt", "a").write(msg + "\n")
