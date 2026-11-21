@@ -1,0 +1,8 @@
+decided,ticker,action,pct,limit,sl,tp,reason
+2026-11-21,SPY,BUY,0.25,,665,720,index deeply oversold (RSI2 0.3 -8.6% in 5d) - bounce trade
+2026-11-21,WMT,BUY,0.15,,120,143,defensive leader; up 1.5% on -3.6% day with 1.9x volume
+2026-11-21,COST,BUY,0.12,,1040,1200,defensive leader above 50/200d; rotation to staples
+2026-11-21,PG,BUY,0.1,,160,185,defensive leader; staples strongest sector
+2026-11-21,GILD,BUY,0.1,,155,185,health care relative strength above 200d
+2026-11-21,LLY,BUY,0.12,,1250,1480,quality uptrend pulled back 6.7% in 5d
+2026-11-21,SMH,SHORT,0.15,,440,340,AI/semis broken trend + NVDA SEC probe; small size and wide stop due to oversold
