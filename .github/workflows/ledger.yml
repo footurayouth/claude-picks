@@ -10,9 +10,9 @@ jobs:
   ledger:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with: { fetch-depth: 0 }   # full history: mtm.py checks when each order line was committed
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.11" }
       - run: pip install -q "pandas==2.2.3" "numpy<2.3" "yfinance==0.2.66"
       - run: python tests/test_fills.py
@@ -21,7 +21,7 @@ jobs:
       - name: commit ledger
         run: |
           git config user.name "ledger-bot"; git config user.email "ledger-bot@users.noreply.github.com"
-          git add equity.csv trades.csv state.json
+          git add equity.csv trades.csv state.json ledger_log.txt
           git diff --cached --quiet || git commit -qm "ledger $(date -u +%F)"
       - name: screen
         continue-on-error: true

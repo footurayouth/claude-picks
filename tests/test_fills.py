@@ -9,9 +9,10 @@ COLS = ["Open", "High", "Low", "Close", "Volume", "Dividends", "Stock Splits", "
 UNIV = {"AAPL", "A", "B", "C", "L", "S", "X", "TINY", "SPY"}
 V = 1e8
 def run(bars, orders, rf=0.0, days=D, st=None, prev_dv=None, can_fill=None):
-    st = st or {"cash": 100000.0, "pos": {}, "last": "2026-11-20", "done_orders": 0, "eq": 100000.0}
+    st = st or {"cash": 100000.0, "pos": {}, "last": "2026-11-20", "eq": 100000.0}
     T, E, L = [], [], []
-    o = pd.DataFrame(orders, columns=["decided", "ticker", "action", "pct", "limit", "sl", "tp", "reason"]).astype(object)
+    keys = ["decided", "ticker", "action", "pct", "limit", "sl", "tp", "reason"]
+    o = [dict(zip(keys, ["" if v is None else str(v) for v in row]), line=i + 2) for i, row in enumerate(orders)]
     def bar(t, d):
         if t not in bars or d not in D: return None
         row = bars[t][list(D).index(d)]
@@ -73,8 +74,13 @@ p = st["pos"]["X"]; ok(p["sh"] == 500 and p["sl"] == 22.5 and p["tp"] == 60 and 
 st, T, E, L = run({"X": [(50, 51, 49, 50, V, 0, 2.0), B(50, 50, 50, 50), B(50, 50, 50, 50)]}, [od("X", "BUY", 0.25, None, 90, 240)])
 p = st["pos"]["X"]; ok(p["sl"] == 45 and p["tp"] == 120, "split on fill day rescales order sl/tp")
 try:
-    run({"X": [B(100, 100, 100, 100), B(50, 51, 49, 50), B(50, 50, 50, 50)]}, [od("X", "BUY", 0.25)]); ok(False, "unexplained 50% gap halts")
-except RuntimeError: ok(True, "unexplained 50% gap halts the run")
+    run({"X": [B(100, 100, 100, 100), B(50, 51, 49, 50), B(50, 50, 50, 50)]}, [od("X", "BUY", 0.25)]); ok(False, "gap at a split ratio with no split event halts")
+except RuntimeError: ok(True, "gap at a split ratio (2:1) with no split event halts the run")
+st, T, E, L = run({"X": [B(100, 100, 100, 100), B(60, 61, 59, 60), B(60, 60, 60, 60)]}, [od("X", "BUY", 0.25)])
+ok("X" in st["pos"] and any("real move" in x for x in L), "real -40% gap is processed and logged, not halted")
+st, T, E, L = run({"A": [B(100, 101, 99, 100)] * 3, "B": [B(100, 101, 99, 100)] * 3},
+                  [od("A", "BUY", 0.25, dec="2026-12-31"), od("B", "BUY", 0.25)])
+ok("B" in st["pos"] and "A" not in st["pos"], "a far-future decided date does not block later rows")
 # Yahoo back-adjusted -> true raw
 y = pd.DataFrame({"Open": [91.85, 92.0, 92.5], "High": [92, 93, 93], "Low": [91, 91, 92], "Close": [91.8, 92.3, 92.6],
                   "Volume": [1e6, 1.5e7, 1.5e7], "Dividends": [0, 0, 0], "Stock Splits": [0, 15.0, 0]}, index=D)

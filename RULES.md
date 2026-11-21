@@ -79,3 +79,17 @@ Fill logic is tested in tests/test_fills.py (all pass).
   - No interest on the first $10k of free cash. ^IRX is used as a proxy for IBKR's benchmark rate.
 - **Not modelled:** forced liquidation. If gross exceeds 2.5x a warning is logged, and the decision step must cut exposure.
 - **Housekeeping:** the ledger writes its outputs only after the whole day simulates without error. Tests: tests/test_fills.py (25 checks).
+
+## Amendment 3 (2026-11-21, before any fill): second review
+- **Order id** = the row's line number in orders.csv.
+  - Rows are parsed with the csv module. A malformed row is rejected, never dropped silently.
+  - A future `decided` date no longer blocks later rows.
+- **Missing data:**
+  - A pending ticker with no data for 5 sessions ages out and is dropped. It no longer stalls the ledger.
+  - A held ticker with no data for 5 sessions makes the workflow fail loudly.
+- **Gap halts:** an overnight gap halts the run only if it is within 3% of a common split ratio with no split event. Other big gaps are real moves and are logged.
+- **Messages:** all ledger messages go to the committed `ledger_log.txt`, which the decision step reads.
+- **check_orders.py also checks:**
+  - CLOSE tickers must be in the universe or held.
+  - `decided` must not be after today's New York date.
+  - For new rows, sl and tp must bracket the latest close.

@@ -15,16 +15,17 @@ Steps:
 3. Set two dates:
    - SESSION = contents of `screen_date.txt` (the latest US close seen by the GitHub ledger).
    - TODAY_NY = today's date in America/New_York: `TZ=America/New_York date +%F`.
-   - If `JOURNAL.md` already has a heading containing `(session SESSION)`, skip to step 7.
+   - If `JOURNAL.md` already has a heading starting with `## TODAY_NY`, skip to step 7. Otherwise always decide, even if the data is stale: `decided` = TODAY_NY keeps that safe.
    - If the last date in `equity.csv` is not SESSION, or SESSION is older than the most recent weekday before TODAY_NY, the ledger is late or failed. Still decide, and say so in the journal.
 4. Review:
    - `state.json`: open positions with sl/tp, pending orders, and equity in `eq`.
+   - The tail of `ledger_log.txt`: rejected or expired orders, gaps, data problems, and gross warnings. Check the `gross` column of `equity.csv`.
    - `trades.csv`: recent fills, stops, targets and dividends.
    - `screen_latest.csv`: S&P 500 + ETF stats as of SESSION close. Columns: r1/r5/r21/r63/r252 = % returns, vs50/vs200 = % vs moving average, off_hi, rsi2, ibs, atr_pct, vol_x.
    - Web search for market news if useful.
 5. Decide with your own judgment: hold, CLOSE, or open BUY/SHORT positions with sl and tp (optional day limit).
    - Orders fill at the next session's open, or at the limit, after TODAY_NY. Costs are real (slippage, commission, borrow, withholding), so avoid churning. Doing nothing is a fine decision.
-   - Allowed: current S&P 500 members (`sp500_current.csv`) and the ETF list `ETF_OK` in `mtm.py`. Gross ≤ 2.0x equity, ≤ 25% of equity per stock, ≤ 50% per ETF. If `mtm.py` warned that gross is above 2.5x, cut exposure.
+   - Allowed: current S&P 500 members (`sp500_current.csv`) and the ETF list `ETF_OK` in `mtm.py`. Gross ≤ 2.0x equity, ≤ 25% of equity per stock, ≤ 50% per ETF. If `ledger_log.txt` warns that gross is above 2.5x, cut exposure.
    - Set sl/tp in raw price terms (the screen's `close` column is the SESSION close).
    - Append rows to `orders.csv` only, format `decided,ticker,action,pct,limit,sl,tp,reason`:
      - `decided` = TODAY_NY.
