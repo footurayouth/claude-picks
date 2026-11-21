@@ -15,7 +15,11 @@ CAP_STOCK, CAP_ETF = 0.25, 0.50           # max fraction of equity per order
 BORROW, CASH_SPREAD, DEBIT_SPREAD, CASH_FREE_BAND = 0.005, 0.005, 0.015, 10000.0
 WHT = 0.15                                # US dividend withholding (EU resident with W-8BEN)
 SEC_FEE, TAF, TAF_MAX = 0.0000278, 0.000166, 8.30
-SPLIT_RATIOS = (1.25, 1.5, 2, 3, 4, 5, 8, 10, 15, 20)  # gaps this close (3%) to a split ratio with no split event halt the run
+SPLIT_RATIOS = (2, 3, 4, 5, 8, 10, 15, 20)  # a gap within 3% of these with no split event = suspected unrecorded split
+
+def looks_like_split(prev_close, open_):
+    ratio = max(open_ / prev_close, prev_close / open_)
+    return any(abs(ratio / k - 1) < 0.03 for k in SPLIT_RATIOS)
 STALE_MAX = 5                             # sessions an order may wait for a missing bar before it is dropped
 
 def universe():
@@ -96,11 +100,10 @@ def simulate(st, orders, bar, days, rf_of, log_trade, log_eq, univ, prev_dv=None
                 for k in ("entry", "last", "sl", "tp"):
                     if p[k] is not None: p[k] = p[k] / r
                 log_trade(f"{d.date()},{t},SPLIT,{r},,split,0,")
-            else:
+            else:   # main() holds back recent split-like gaps for a retry; anything reaching here is treated as a real move
                 ratio = max(b["Open"] / p["last"], p["last"] / b["Open"])
-                if any(abs(ratio / k - 1) < 0.03 for k in SPLIT_RATIOS):
-                    raise RuntimeError(f"{t}: open {b['Open']} vs last {p['last']} on {d.date()} looks like an unrecorded {ratio:.2f}:1 split: check data")
-                if ratio > 1.2: log(f"{t} gapped {(b['Open'] / p['last'] - 1) * 100:+.0f}% at the {d.date()} open (real move, no split)")
+                if ratio > 1.2: log(f"{t} gapped {(b['Open'] / p['last'] - 1) * 100:+.0f}% at the {d.date()} open"
+                                    + (" (looks like a split but none recorded: CHECK)" if looks_like_split(p["last"], b["Open"]) else " (real move)"))
             for col, w in (("Dividends", WHT), ("Capital Gains", 0.0)):
                 dv = float(b.get(col, 0) or 0)
                 if dv > 0:
@@ -249,7 +252,18 @@ def main():
     held_dead = dead & set(st["pos"])
     if held_dead: sys.exit(f"held position(s) {sorted(held_dead)} have no price data for 5 sessions (delisted/renamed?): fix by hand")
     need = (set(st["pos"]) | {o["ticker"] for o in st["pending"]}) - dead   # dead pending tickers age out in simulate()
+    def split_suspect(t, d):
+        h = px.get(t)
+        if h is None or d not in h.index: return False
+        prev = h[h.index < d]["Close"].dropna()
+        r = h.loc[d]
+        return len(prev) > 0 and not (float(r.get("Stock Splits", 0) or 0) > 0) and looks_like_split(float(prev.iloc[-1]), float(r["Open"]))
     for i, d in enumerate(days):
+        sus = [t for t in need if d in recent and split_suspect(t, d)]
+        if sus:
+            msg = f"{d.date()}: {sus} gapped like an unrecorded split: holding this day back, will retry next run"
+            print(msg); open(ROOT / "ledger_log.txt", "a").write(msg + "\n")
+            days = days[:i]; break
         if d in recent and any(bar(t, d) is None for t in need):
             msg = f"data missing on {d.date()} for {[t for t in need if bar(t, d) is None]}: stopping, will retry next run"
             print(msg); open(ROOT / "ledger_log.txt", "a").write(msg + "\n")

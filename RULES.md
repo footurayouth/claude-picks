@@ -87,9 +87,10 @@ Fill logic is tested in tests/test_fills.py (all pass).
 - **Missing data:**
   - A pending ticker with no data for 5 sessions ages out and is dropped. It no longer stalls the ledger.
   - A held ticker with no data for 5 sessions makes the workflow fail loudly.
-- **Gap halts:** an overnight gap halts the run only if it is within 3% of a common split ratio with no split event. Other big gaps are real moves and are logged.
+- **Gap holds:** an overnight gap within 3% of a split ratio (2, 3, 4, 5, 8, 10, 15, 20) with no split event holds that day back for a retry. This applies only in the latest 2 sessions, in case Yahoo posts the split late. Older ones, and all other gaps, are processed as real moves and logged. Over the last 2 years of S&P 500 data this would have flagged 0 real gaps.
 - **Messages:** all ledger messages go to the committed `ledger_log.txt`, which the decision step reads.
 - **check_orders.py also checks:**
   - CLOSE tickers must be in the universe or held.
   - `decided` must not be after today's New York date.
   - For new rows, sl and tp must bracket the latest close.
+  - Only new rows fail the check. Old rows give warnings, since the ledger already handled them.

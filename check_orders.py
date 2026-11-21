@@ -18,10 +18,15 @@ closes = {r["t"]: float(r["close"]) for r in csv.DictReader(open(ROOT / "screen_
 lines = open(ROOT / "orders.csv").read().splitlines()
 hdr = "decided,ticker,action,pct,limit,sl,tp,reason"
 if lines[0] != hdr: print("header changed:", lines[0]); sys.exit(1)
+warn = 0
 for i, ln in enumerate(lines[1:], start=2):
+    if not ln.strip(): continue
     f = next(csv.reader([ln]))
+    is_new = len(f) < 1 or f[0] >= sess
     def err(m):
-        global bad; bad += 1; print(f"line {i}: {m}: {ln}")
+        global bad, warn
+        if is_new: bad += 1; print(f"line {i}: ERROR {m}: {ln}")
+        else: warn += 1; print(f"line {i}: warning (old row, ledger already handled it) {m}: {ln}")
     if len(f) != 8: err(f"{len(f)} fields, need 8 (commas in reason?)"); continue
     dec, t, a, pct, lim, sl, tp, why = f
     try:
@@ -52,4 +57,4 @@ for i, ln in enumerate(lines[1:], start=2):
             if (a == "BUY" and not s_ < px < t_) or (a == "SHORT" and not t_ < px < s_):
                 err(f"sl/tp must bracket the latest close {px:.2f}")
         except ValueError: pass
-print("orders.csv OK" if not bad else f"{bad} problem(s)"); sys.exit(1 if bad else 0)
+print("orders.csv OK" if not bad else f"{bad} problem(s) in new rows", f"({warn} old-row warnings)" if warn else ""); sys.exit(1 if bad else 0)

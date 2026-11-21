@@ -73,11 +73,14 @@ st, T, E, L = run({"X": [B(100, 100, 100, 100), (50, 51, 49, 50, V, 0, 2.0), B(5
 p = st["pos"]["X"]; ok(p["sh"] == 500 and p["sl"] == 22.5 and p["tp"] == 60 and abs(float(E[1].split(",")[1]) - float(E[0].split(",")[1])) < 1, "split: shares x2, sl/tp halved, equity unchanged")
 st, T, E, L = run({"X": [(50, 51, 49, 50, V, 0, 2.0), B(50, 50, 50, 50), B(50, 50, 50, 50)]}, [od("X", "BUY", 0.25, None, 90, 240)])
 p = st["pos"]["X"]; ok(p["sl"] == 45 and p["tp"] == 120, "split on fill day rescales order sl/tp")
-try:
-    run({"X": [B(100, 100, 100, 100), B(50, 51, 49, 50), B(50, 50, 50, 50)]}, [od("X", "BUY", 0.25)]); ok(False, "gap at a split ratio with no split event halts")
-except RuntimeError: ok(True, "gap at a split ratio (2:1) with no split event halts the run")
-st, T, E, L = run({"X": [B(100, 100, 100, 100), B(60, 61, 59, 60), B(60, 60, 60, 60)]}, [od("X", "BUY", 0.25)])
-ok("X" in st["pos"] and any("real move" in x for x in L), "real -40% gap is processed and logged, not halted")
+from mtm import looks_like_split
+ok(looks_like_split(100, 50.5) and looks_like_split(100, 10) and not looks_like_split(100, 80) and not looks_like_split(100, 67) and not looks_like_split(100, 125),
+   "split detector: 2:1 and 10:1 flagged; -20%, -33%, +25% earnings gaps not flagged")
+st, T, E, L = run({"X": [B(100, 100, 100, 100), B(50, 51, 49, 50), B(50, 50, 50, 50)]}, [od("X", "BUY", 0.25)])
+ok(any("CHECK" in x for x in L), "split-like gap reaching the engine is logged for checking, never crashes")
+for g in (60, 67, 80, 122, 125):
+    st, T, E, L = run({"X": [B(100, 100, 100, 100), B(g, g + 1, g - 1, g), B(g, g, g, g)]}, [od("X", "BUY", 0.25)])
+    ok("X" in st["pos"] and not any("CHECK" in x for x in L), f"real {g - 100:+d}% gap processed as a real move")
 st, T, E, L = run({"A": [B(100, 101, 99, 100)] * 3, "B": [B(100, 101, 99, 100)] * 3},
                   [od("A", "BUY", 0.25, dec="2026-12-31"), od("B", "BUY", 0.25)])
 ok("B" in st["pos"] and "A" not in st["pos"], "a far-future decided date does not block later rows")
