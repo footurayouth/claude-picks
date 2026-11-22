@@ -15,7 +15,9 @@ Steps:
 3. Set two dates:
    - SESSION = contents of `screen_date.txt` (the latest US close seen by the GitHub ledger).
    - TODAY_NY = today's date in America/New_York: `TZ=America/New_York date +%F`.
-   - If `JOURNAL.md` already has a heading starting with `## TODAY_NY`, skip to step 7. Otherwise always decide, even if the data is stale: `decided` = TODAY_NY keeps that safe.
+   - If `JOURNAL.md` already has a heading starting with `## TODAY_NY`, skip to step 7.
+   - If TODAY_NY had no US session (weekend or NYSE holiday, e.g. Thanksgiving) and `JOURNAL.md` already has a heading containing `(session SESSION)`, skip to step 7: nothing new happened.
+   - Otherwise always decide, even if the data is stale: `decided` = TODAY_NY keeps that safe.
    - If the last date in `equity.csv` is not SESSION, or SESSION is older than the most recent weekday before TODAY_NY, the ledger is late or failed. Still decide, and say so in the journal.
 4. Review:
    - `state.json`: open positions with sl/tp, pending orders, and equity in `eq`.
