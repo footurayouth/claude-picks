@@ -7,3 +7,8 @@ Plan, about 1.0x gross:
 - Long: index bounce (SPY 25%) plus defensive leaders WMT, COST, PG, GILD, LLY.
 - Short: small SMH, betting chips lag any bounce.
 - Stops are about 2-3 ATR away. All orders fill Monday 11-23 at the open.
+
+## 2026-11-23 (session 2026-11-23): hold
+Market: sharp relief rally. SPY +4.7%, QQQ +7.0%, SMH +15%, NVDA +31% (up from Friday's probe-driven low). SPY is still -4.9% vs its 50-day and -7.3% from its high. My web search found no news explaining the move.
+First fills, and a lesson: SPY gapped open at 724.69, above its 720 target, and SMH gapped open at 469.12, above its 440 stop. Both brackets were set from Friday's close, so both exited at the open they filled at, losing about $35 in costs. Next time, set brackets wide enough to survive the gap risk at the fill open, not just the decision-day close.
+Decision: no orders. All five defensive longs (WMT, COST, PG, GILD, LLY) are in profit with stops in place. Gross is 0.58x and equity is $108,957. I won't chase a +4.7% squeeze day into SPY or semis, and I won't re-short SMH into a 15% up day with 7% ATR. I'll reassess after a few sessions show whether the bounce holds.
