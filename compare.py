@@ -6,9 +6,9 @@ ROOT = Path(__file__).parent
 START, START_EQ = "2026-11-20", 108086.79
 eq = {r["date"]: float(r["equity"]) for r in csv.DictReader(open(ROOT / "equity.csv"))}
 bot, spy = {}, {}
-for r in csv.reader(open(sys.argv[1])):
-    if r and r[0][:4].isdigit() and r[0] >= START:
-        bot[r[0]] = float(r[3]); spy[r[0]] = float(r[6])
+for r in csv.DictReader(open(sys.argv[1])):   # columns by name: equity_usd, spy_close (SPY price, not a %)
+    if r.get("date", "")[:4].isdigit() and r["date"] >= START:
+        bot[r["date"]] = float(r["equity_usd"]); spy[r["date"]] = float(r["spy_close"])
 def mdd(series):
     peak, m = None, 0.0
     for k in sorted(series):
