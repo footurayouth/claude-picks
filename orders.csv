@@ -6,3 +6,4 @@ decided,ticker,action,pct,limit,sl,tp,reason
 2026-11-21,GILD,BUY,0.1,,155,185,health care relative strength above 200d
 2026-11-21,LLY,BUY,0.12,,1250,1480,quality uptrend pulled back 6.7% in 5d
 2026-11-21,SMH,SHORT,0.15,,440,340,AI/semis broken trend + NVDA SEC probe; small size and wide stop due to oversold
+2026-11-24,SMH,SHORT,0.10,,480,360,semis bounce failed (-7.3% today; -21% vs 50d); small size and stop ~12% away for gap risk
