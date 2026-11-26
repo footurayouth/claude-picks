@@ -22,3 +22,9 @@ Decision: re-open a small SMH short, 10% of equity at market. The chip bounce ga
 Data: at 18:40 ET the GitHub ledger and screen had not posted today's 11-25 session yet (screen_date is still 11-24; it usually lands around 17:20 ET). So I'm deciding on the same 11-24 data I used last night. I can't confirm whether yesterday's SMH short filled at today's open until the ledger runs.
 Market view (as of 11-24): tech is weak (QQQ -10% vs its 50-day, SMH -21%) and defensives lead (XLP and XLV are near their highs). Nothing has changed since last night's plan.
 Decision: no orders. The book is five defensive longs, all with stops, plus the pending 10% SMH short. Gross is about 0.68x if the short filled. Thursday is Thanksgiving, so any new order could only fill at Friday's half-day open; I won't add risk on stale data before a thin session.
+
+## 2026-11-26 (session 2026-11-25): hold over Thanksgiving
+Data: the ledger is current through 11-25 with no warnings. Today is Thanksgiving with no US session, so the next fill is Friday's half-day open.
+Market (11-25): a choppy, mixed day. SPY -0.3%, QQQ -0.7%, IWM +0.7%, and the median stock was +0.8%. Semis gapped down and then recovered the whole day: SMH opened near 402 and closed at 422.46 (IBS 98). 295 of 518 names are above their 200-day. Defensives are holding near their highs (XLP -0.3% off high, PG at a high).
+Book: equity is $109,478 (+1.29% since 11-20) and gross is 0.69x. The SMH short filled at 402.47 and is about 5% under water. Its 480 stop is still about 13.6% away, which risks about 1.4% of equity, as planned.
+Decision: no orders. The thesis is unchanged: SMH is -22% vs its 50-day and the defensives are working. Friday's thin half-day is not the place to add or cut risk, and churning costs money.
