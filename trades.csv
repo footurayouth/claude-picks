@@ -8,3 +8,4 @@ date,ticker,side,shares,price,why,commission,pnl
 2026-11-23,SMH,SELL,34,469.1153,open,1.45,
 2026-11-23,SPY,SELL,37,724.3300,target,1.75,-16.15
 2026-11-23,SMH,BUY,34,469.5847,stop,1.00,-18.41
+2026-11-25,SMH,SELL,27,402.4687,open,1.31,
